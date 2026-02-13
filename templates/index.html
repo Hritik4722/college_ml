@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Feasibility Prediction</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header p {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.1rem;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title i {
+            color: #667eea;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            color: #555;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn i {
+            margin-right: 8px;
+        }
+
+        /* Results Section */
+        .results-section {
+            display: {% if result %}block{% else %}none{% endif %};
+        }
+
+        .result-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            margin-bottom: 30px;
+        }
+
+        .prediction-result {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .result-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2rem;
+        }
+
+        .result-feasible {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+
+        .result-not-feasible {
+            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+            color: white;
+        }
+
+        .result-uncertain {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .result-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .result-feasible-text { color: #11998e; }
+        .result-not-feasible-text { color: #eb3349; }
+        .result-uncertain-text { color: #f093fb; }
+
+        .result-description {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        /* Confidence Meter */
+        .confidence-section {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid #eee;
+        }
+
+        .confidence-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .confidence-bar {
+            height: 12px;
+            background: #e0e0e0;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            border-radius: 6px;
+            transition: width 1s ease;
+        }
+
+        /* Charts Section */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 900px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+
+        .chart-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chart-title i {
+            color: #667eea;
+        }
+
+        .chart-img {
+            width: 100%;
+            border-radius: 10px;
+        }
+
+        /* Animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate {
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1><i class="fas fa-project-diagram"></i> Project Feasibility Predictor</h1>
+            <p>AI-powered analysis to determine your project's success probability</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Input Form -->
+            <div class="card animate">
+                <h2 class="card-title"><i class="fas fa-clipboard-list"></i> Project Parameters</h2>
+                
+                <form method="post" action="/predict">
+                    <div class="form-group">
+                        <label for="project_type"><i class="fas fa-building"></i> Project Type</label>
+                        <select id="project_type" name="Project_Type" required style="width: 100%; padding: 12px 16px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 1rem; font-family: 'Inter', sans-serif; background: white; cursor: pointer;">
+                            <option value="" disabled {{ 'selected' if not input_data else '' }}>Select Project Type</option>
+                            <option value="Road" {{ 'selected' if input_data and input_data.Project_Type == 'Road' else '' }}>Road</option>
+                            <option value="Power Plant" {{ 'selected' if input_data and input_data.Project_Type == 'Power Plant' else '' }}>Power Plant</option>
+                            <option value="Building" {{ 'selected' if input_data and input_data.Project_Type == 'Building' else '' }}>Building</option>
+                            <option value="Bridge" {{ 'selected' if input_data and input_data.Project_Type == 'Bridge' else '' }}>Bridge</option>
+                            <option value="Water Infra" {{ 'selected' if input_data and input_data.Project_Type == 'Water Infra' else '' }}>Water Infra</option>
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="cost"><i class="fas fa-dollar-sign"></i> Estimated Cost (USD)</label>
+                            <input type="number" step="0.01" id="cost" name="Estimated_Cost_USD" 
+                                   placeholder="e.g., 50000" required 
+                                   value="{{ input_data.Estimated_Cost_USD if input_data else '' }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="time"><i class="fas fa-clock"></i> Time Estimate (Days)</label>
+                            <input type="number" id="time" name="Time_Estimate_Days" 
+                                   placeholder="e.g., 90" required
+                                   value="{{ input_data.Time_Estimate_Days if input_data else '' }}">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="resource"><i class="fas fa-users"></i> Resource Allocation Score</label>
+                            <input type="number" step="0.01" id="resource" name="Resource_Allocation_Score" 
+                                   placeholder="0-10" required
+                                   value="{{ input_data.Resource_Allocation_Score if input_data else '' }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="risk"><i class="fas fa-exclamation-triangle"></i> Risk Assessment Score</label>
+                            <input type="number" step="0.01" id="risk" name="Risk_Assessment_Score" 
+                                   placeholder="0-10" required
+                                   value="{{ input_data.Risk_Assessment_Score if input_data else '' }}">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="impact"><i class="fas fa-leaf"></i> Environmental Impact Score</label>
+                            <input type="number" step="0.01" id="impact" name="Environmental_Impact_Score" 
+                                   placeholder="0-10" required
+                                   value="{{ input_data.Environmental_Impact_Score if input_data else '' }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="deviation"><i class="fas fa-chart-line"></i> Historical Cost Deviation (%)</label>
+                            <input type="number" step="0.01" id="deviation" name="Historical_Cost_Deviation_" 
+                                   placeholder="e.g., 5.5" required
+                                   value="{{ input_data.Historical_Cost_Deviation_ if input_data else '' }}">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="stakeholder"><i class="fas fa-handshake"></i> Stakeholder Priority Score</label>
+                            <input type="number" step="0.01" id="stakeholder" name="Stakeholder_Priority_Score" 
+                                   placeholder="0-10" required
+                                   value="{{ input_data.Stakeholder_Priority_Score if input_data else '' }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="scope"><i class="fas fa-layer-group"></i> Scope Complexity (1-3)</label>
+                            <input type="number" id="scope" name="Scope_Complexity_Numeric" 
+                                   min="1" max="3" placeholder="1, 2, or 3" required
+                                   value="{{ input_data.Scope_Complexity_Numeric if input_data else '' }}">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-brain"></i> Analyze Feasibility
+                    </button>
+                </form>
+            </div>
+
+            <!-- Results Panel -->
+            <div class="results-section">
+                {% if result %}
+                <div class="result-card animate delay-1">
+                    <h2 class="card-title"><i class="fas fa-chart-pie"></i> Analysis Results</h2>
+                    
+                    <div class="prediction-result">
+                        {% if result == "Feasible" %}
+                        <div class="result-icon result-feasible">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div class="result-text result-feasible-text">{{ result }}</div>
+                        <div class="result-description">Great news! Your project shows strong potential for success.</div>
+                        {% elif result == "Not Feasible" %}
+                        <div class="result-icon result-not-feasible">
+                            <i class="fas fa-times"></i>
+                        </div>
+                        <div class="result-text result-not-feasible-text">{{ result }}</div>
+                        <div class="result-description">Consider revising project parameters to improve viability.</div>
+                        {% else %}
+                        <div class="result-icon result-uncertain">
+                            <i class="fas fa-question"></i>
+                        </div>
+                        <div class="result-text result-uncertain-text">{{ result }}</div>
+                        <div class="result-description">More analysis may be needed to determine feasibility.</div>
+                        {% endif %}
+                    </div>
+
+                    {% if confidence %}
+                    <div class="confidence-section">
+                        <div class="confidence-label">
+                            <span>Confidence Level</span>
+                            <span>{{ "%.1f"|format(confidence * 100) }}%</span>
+                        </div>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: {{ confidence * 100 }}%; 
+                                background: {% if result == 'Feasible' %}linear-gradient(90deg, #11998e, #38ef7d){% elif result == 'Not Feasible' %}linear-gradient(90deg, #eb3349, #f45c43){% else %}linear-gradient(90deg, #f093fb, #f5576c){% endif %};">
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Charts Grid -->
+                <div class="charts-grid">
+                    <div class="chart-card animate delay-2">
+                        <h3 class="chart-title"><i class="fas fa-bar-chart"></i> Feature Importance</h3>
+                        <img src="{{ feature_plot }}" alt="Feature Importance Chart" class="chart-img">
+                    </div>
+                    <div class="chart-card animate delay-2">
+                        <h3 class="chart-title"><i class="fas fa-spider"></i> Input Radar</h3>
+                        <img src="{{ radar_plot }}" alt="Input Radar Chart" class="chart-img">
+                    </div>
+                    <div class="chart-card animate delay-3">
+                        <h3 class="chart-title"><i class="fas fa-tachometer-alt"></i> Risk Gauge</h3>
+                        <img src="{{ gauge_plot }}" alt="Risk Gauge Chart" class="chart-img">
+                    </div>
+                    <div class="chart-card animate delay-3">
+                        <h3 class="chart-title"><i class="fas fa-chart-area"></i> Score Distribution</h3>
+                        <img src="{{ distribution_plot }}" alt="Score Distribution Chart" class="chart-img">
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Placeholder when no results -->
+            {% if not result %}
+            <div class="card animate delay-1" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: #888;">
+                <i class="fas fa-chart-line" style="font-size: 4rem; margin-bottom: 20px; color: #ddd;"></i>
+                <h3 style="color: #555; margin-bottom: 10px;">Ready to Analyze</h3>
+                <p>Enter your project parameters and click "Analyze Feasibility" to see detailed predictions and visualizations.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
