@@ -66,5 +66,5 @@ Thumbs.db
 # ----------------------
 # Data Files
 # ----------------------
-data/
-models/
+# data/
+# models/

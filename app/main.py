@@ -5,7 +5,7 @@ from fastapi.responses import Response
 from pathlib import Path
 import time
 
-from model import predict_feasibility, get_prediction_confidence
+from model import predict_feasibility, get_prediction_confidence, predict_cost, predict_time
 from visualize import generate_all_visualizations
 import joblib
 
@@ -119,6 +119,107 @@ def predict(
             "feature_plot": f"/static/feature_importance.png?v={cache_bust}",
             "radar_plot": f"/static/radar_chart.png?v={cache_bust}",
             "gauge_plot": f"/static/gauge_chart.png?v={cache_bust}",
-            "distribution_plot": f"/static/distribution_chart.png?v={cache_bust}"
+            "distribution_plot": f"/static/distribution_chart.png?v={cache_bust}",
+            "active_tab": "feasibility"
+        }
+    )
+
+@app.post("/predict-cost")
+def predict_cost_route(
+    request: Request,
+    Project_Type: str = Form(...),
+    Scope_Complexity_Numeric: int = Form(...),
+    Resource_Allocation_Score: float = Form(...),
+    Risk_Assessment_Score: float = Form(...),
+    Environmental_Impact_Score: float = Form(...),
+    Historical_Cost_Deviation_: float = Form(...),
+    Stakeholder_Priority_Score: float = Form(...)
+):
+    # One-hot encode the Project_Type (Bridge = all zeros)
+    project_type_encoded = [1 if pt == Project_Type else 0 for pt in PROJECT_TYPES_ENCODED]
+
+    # Build input in EXACT training order (must match COST_TIME_FEATURE_NAMES)
+    input_data = [
+        Scope_Complexity_Numeric,
+        Resource_Allocation_Score,
+        Risk_Assessment_Score,
+        Environmental_Impact_Score,
+        Historical_Cost_Deviation_,
+        Stakeholder_Priority_Score
+    ] + project_type_encoded
+
+    # Get prediction
+    cost_result = predict_cost(input_data)
+
+    # Store input data for form repopulation
+    cost_input_dict = {
+        'Project_Type': Project_Type,
+        'Scope_Complexity_Numeric': Scope_Complexity_Numeric,
+        'Resource_Allocation_Score': Resource_Allocation_Score,
+        'Risk_Assessment_Score': Risk_Assessment_Score,
+        'Environmental_Impact_Score': Environmental_Impact_Score,
+        'Historical_Cost_Deviation_': Historical_Cost_Deviation_,
+        'Stakeholder_Priority_Score': Stakeholder_Priority_Score
+    }
+
+    return templates.TemplateResponse(
+        "index.html",
+        {
+            "request": request,
+            "cost_result": f"{cost_result:,.2f}",
+            "cost_raw": cost_result,
+            "cost_input_data": cost_input_dict,
+            "active_tab": "cost"
+        }
+    )
+
+
+@app.post("/predict-time")
+def predict_time_route(
+    request: Request,
+    Project_Type: str = Form(...),
+    Scope_Complexity_Numeric: int = Form(...),
+    Resource_Allocation_Score: float = Form(...),
+    Risk_Assessment_Score: float = Form(...),
+    Environmental_Impact_Score: float = Form(...),
+    Historical_Cost_Deviation_: float = Form(...),
+    Stakeholder_Priority_Score: float = Form(...)
+):
+    # One-hot encode the Project_Type (Bridge = all zeros)
+    project_type_encoded = [1 if pt == Project_Type else 0 for pt in PROJECT_TYPES_ENCODED]
+
+    # Build input in EXACT training order (must match TIME_FEATURE_NAMES)
+    # Time model used df.drop() — Scope_Complexity_Numeric comes AFTER the scores
+    input_data = [
+        Resource_Allocation_Score,
+        Risk_Assessment_Score,
+        Environmental_Impact_Score,
+        Historical_Cost_Deviation_,
+        Stakeholder_Priority_Score,
+        Scope_Complexity_Numeric
+    ] + project_type_encoded
+
+    # Get prediction
+    time_result = predict_time(input_data)
+
+    # Store input data for form repopulation
+    time_input_dict = {
+        'Project_Type': Project_Type,
+        'Scope_Complexity_Numeric': Scope_Complexity_Numeric,
+        'Resource_Allocation_Score': Resource_Allocation_Score,
+        'Risk_Assessment_Score': Risk_Assessment_Score,
+        'Environmental_Impact_Score': Environmental_Impact_Score,
+        'Historical_Cost_Deviation_': Historical_Cost_Deviation_,
+        'Stakeholder_Priority_Score': Stakeholder_Priority_Score
+    }
+
+    return templates.TemplateResponse(
+        "index.html",
+        {
+            "request": request,
+            "time_result": f"{time_result:,.0f}",
+            "time_raw": time_result,
+            "time_input_data": time_input_dict,
+            "active_tab": "time"
         }
     )
