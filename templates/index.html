@@ -229,28 +229,13 @@
         }
 
         /* Feasibility Results */
-        .results-section {
-            display: {
-                % if result %
-            }
-
-            block {
-                % else %
-            }
-
-            none {
-                % endif %
-            }
-
-            ;
-        }
+        .results-section {}
 
         .result-card {
             background: white;
             border-radius: 20px;
             padding: 30px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-            margin-bottom: 30px;
         }
 
         .prediction-result {
@@ -334,10 +319,26 @@
             transition: width 1s ease;
         }
 
+        .charts-section {
+            margin-top: 30px;
+        }
+
+        .charts-section-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 20px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
         .charts-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            gap: 25px;
         }
 
         @media (max-width: 900px) {
@@ -349,12 +350,12 @@
         .chart-card {
             background: white;
             border-radius: 20px;
-            padding: 25px;
+            padding: 30px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
         }
 
         .chart-title {
-            font-size: 1rem;
+            font-size: 1.1rem;
             font-weight: 600;
             color: #333;
             margin-bottom: 15px;
@@ -541,27 +542,27 @@
                             <div class="form-group">
                                 <label for="cost"><i class="fas fa-dollar-sign"></i> Estimated Cost (USD)</label>
                                 <input type="number" step="0.01" id="cost" name="Estimated_Cost_USD"
-                                    placeholder="e.g., 50000" required
+                                    placeholder="1,000,000 - 7,000,000" required
                                     value="{{ input_data.Estimated_Cost_USD if input_data else '' }}">
                             </div>
                             <div class="form-group">
                                 <label for="time"><i class="fas fa-clock"></i> Time Estimate (Days)</label>
-                                <input type="number" id="time" name="Time_Estimate_Days" placeholder="e.g., 90" required
-                                    value="{{ input_data.Time_Estimate_Days if input_data else '' }}">
+                                <input type="number" id="time" name="Time_Estimate_Days" placeholder="120 - 599"
+                                    required value="{{ input_data.Time_Estimate_Days if input_data else '' }}">
                             </div>
                         </div>
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="resource"><i class="fas fa-users"></i> Resource Allocation Score</label>
                                 <input type="number" step="0.01" id="resource" name="Resource_Allocation_Score"
-                                    placeholder="0-10" required
+                                    placeholder="50 - 99" required
                                     value="{{ input_data.Resource_Allocation_Score if input_data else '' }}">
                             </div>
                             <div class="form-group">
                                 <label for="risk"><i class="fas fa-exclamation-triangle"></i> Risk Assessment
                                     Score</label>
                                 <input type="number" step="0.01" id="risk" name="Risk_Assessment_Score"
-                                    placeholder="0-10" required
+                                    placeholder="30 - 99" required
                                     value="{{ input_data.Risk_Assessment_Score if input_data else '' }}">
                             </div>
                         </div>
@@ -569,14 +570,14 @@
                             <div class="form-group">
                                 <label for="impact"><i class="fas fa-leaf"></i> Environmental Impact Score</label>
                                 <input type="number" step="0.01" id="impact" name="Environmental_Impact_Score"
-                                    placeholder="0-10" required
+                                    placeholder="20 - 99" required
                                     value="{{ input_data.Environmental_Impact_Score if input_data else '' }}">
                             </div>
                             <div class="form-group">
                                 <label for="deviation"><i class="fas fa-chart-line"></i> Historical Cost Deviation
                                     (%)</label>
                                 <input type="number" step="0.01" id="deviation" name="Historical_Cost_Deviation_"
-                                    placeholder="e.g., 5.5" required
+                                    placeholder="0.0 - 10.0" required
                                     value="{{ input_data.Historical_Cost_Deviation_ if input_data else '' }}">
                             </div>
                         </div>
@@ -585,7 +586,7 @@
                                 <label for="stakeholder"><i class="fas fa-handshake"></i> Stakeholder Priority
                                     Score</label>
                                 <input type="number" step="0.01" id="stakeholder" name="Stakeholder_Priority_Score"
-                                    placeholder="0-10" required
+                                    placeholder="0.5 - 1.0" required
                                     value="{{ input_data.Stakeholder_Priority_Score if input_data else '' }}">
                             </div>
                             <div class="form-group">
@@ -636,24 +637,6 @@
                         </div>
                         {% endif %}
                     </div>
-                    <div class="charts-grid">
-                        <div class="chart-card animate delay-2">
-                            <h3 class="chart-title"><i class="fas fa-bar-chart"></i> Feature Importance</h3>
-                            <img src="{{ feature_plot }}" alt="Feature Importance" class="chart-img">
-                        </div>
-                        <div class="chart-card animate delay-2">
-                            <h3 class="chart-title"><i class="fas fa-spider"></i> Input Radar</h3>
-                            <img src="{{ radar_plot }}" alt="Input Radar" class="chart-img">
-                        </div>
-                        <div class="chart-card animate delay-3">
-                            <h3 class="chart-title"><i class="fas fa-tachometer-alt"></i> Risk Gauge</h3>
-                            <img src="{{ gauge_plot }}" alt="Risk Gauge" class="chart-img">
-                        </div>
-                        <div class="chart-card animate delay-3">
-                            <h3 class="chart-title"><i class="fas fa-chart-area"></i> Score Distribution</h3>
-                            <img src="{{ distribution_plot }}" alt="Score Distribution" class="chart-img">
-                        </div>
-                    </div>
                     {% endif %}
                 </div>
 
@@ -667,6 +650,30 @@
                 </div>
                 {% endif %}
             </div>
+
+            {% if result %}
+            <div class="charts-section">
+                <h2 class="charts-section-title"><i class="fas fa-chart-bar"></i> Detailed Visualizations</h2>
+                <div class="charts-grid">
+                    <div class="chart-card animate delay-2">
+                        <h3 class="chart-title"><i class="fas fa-bar-chart"></i> Feature Importance</h3>
+                        <img src="{{ feature_plot }}" alt="Feature Importance" class="chart-img">
+                    </div>
+                    <div class="chart-card animate delay-2">
+                        <h3 class="chart-title"><i class="fas fa-spider"></i> Input Radar</h3>
+                        <img src="{{ radar_plot }}" alt="Input Radar" class="chart-img">
+                    </div>
+                    <div class="chart-card animate delay-3">
+                        <h3 class="chart-title"><i class="fas fa-tachometer-alt"></i> Risk Gauge</h3>
+                        <img src="{{ gauge_plot }}" alt="Risk Gauge" class="chart-img">
+                    </div>
+                    <div class="chart-card animate delay-3">
+                        <h3 class="chart-title"><i class="fas fa-chart-area"></i> Score Distribution</h3>
+                        <img src="{{ distribution_plot }}" alt="Score Distribution" class="chart-img">
+                    </div>
+                </div>
+            </div>
+            {% endif %}
         </div>
 
         <!-- ====================== TAB 2: COST ESTIMATOR ====================== -->
@@ -705,7 +712,7 @@
                                 <label for="cost_resource"><i class="fas fa-users"></i> Resource Allocation
                                     Score</label>
                                 <input type="number" step="0.01" id="cost_resource" name="Resource_Allocation_Score"
-                                    placeholder="0-10" required
+                                    placeholder="50 - 99" required
                                     value="{{ cost_input_data.Resource_Allocation_Score if cost_input_data else '' }}">
                             </div>
                         </div>
@@ -714,13 +721,13 @@
                                 <label for="cost_risk"><i class="fas fa-exclamation-triangle"></i> Risk Assessment
                                     Score</label>
                                 <input type="number" step="0.01" id="cost_risk" name="Risk_Assessment_Score"
-                                    placeholder="0-10" required
+                                    placeholder="30 - 99" required
                                     value="{{ cost_input_data.Risk_Assessment_Score if cost_input_data else '' }}">
                             </div>
                             <div class="form-group">
                                 <label for="cost_impact"><i class="fas fa-leaf"></i> Environmental Impact Score</label>
                                 <input type="number" step="0.01" id="cost_impact" name="Environmental_Impact_Score"
-                                    placeholder="0-10" required
+                                    placeholder="20 - 99" required
                                     value="{{ cost_input_data.Environmental_Impact_Score if cost_input_data else '' }}">
                             </div>
                         </div>
@@ -729,14 +736,14 @@
                                 <label for="cost_deviation"><i class="fas fa-chart-line"></i> Historical Cost Deviation
                                     (%)</label>
                                 <input type="number" step="0.01" id="cost_deviation" name="Historical_Cost_Deviation_"
-                                    placeholder="e.g., 5.5" required
+                                    placeholder="0.0 - 10.0" required
                                     value="{{ cost_input_data.Historical_Cost_Deviation_ if cost_input_data else '' }}">
                             </div>
                             <div class="form-group">
                                 <label for="cost_stakeholder"><i class="fas fa-handshake"></i> Stakeholder Priority
                                     Score</label>
                                 <input type="number" step="0.01" id="cost_stakeholder" name="Stakeholder_Priority_Score"
-                                    placeholder="0-10" required
+                                    placeholder="0.5 - 1.0" required
                                     value="{{ cost_input_data.Stakeholder_Priority_Score if cost_input_data else '' }}">
                             </div>
                         </div>
@@ -803,7 +810,7 @@
                                 <label for="time_resource"><i class="fas fa-users"></i> Resource Allocation
                                     Score</label>
                                 <input type="number" step="0.01" id="time_resource" name="Resource_Allocation_Score"
-                                    placeholder="0-10" required
+                                    placeholder="50 - 99" required
                                     value="{{ time_input_data.Resource_Allocation_Score if time_input_data else '' }}">
                             </div>
                         </div>
@@ -812,13 +819,13 @@
                                 <label for="time_risk"><i class="fas fa-exclamation-triangle"></i> Risk Assessment
                                     Score</label>
                                 <input type="number" step="0.01" id="time_risk" name="Risk_Assessment_Score"
-                                    placeholder="0-10" required
+                                    placeholder="30 - 99" required
                                     value="{{ time_input_data.Risk_Assessment_Score if time_input_data else '' }}">
                             </div>
                             <div class="form-group">
                                 <label for="time_impact"><i class="fas fa-leaf"></i> Environmental Impact Score</label>
                                 <input type="number" step="0.01" id="time_impact" name="Environmental_Impact_Score"
-                                    placeholder="0-10" required
+                                    placeholder="20 - 99" required
                                     value="{{ time_input_data.Environmental_Impact_Score if time_input_data else '' }}">
                             </div>
                         </div>
@@ -827,14 +834,14 @@
                                 <label for="time_deviation"><i class="fas fa-chart-line"></i> Historical Cost Deviation
                                     (%)</label>
                                 <input type="number" step="0.01" id="time_deviation" name="Historical_Cost_Deviation_"
-                                    placeholder="e.g., 5.5" required
+                                    placeholder="0.0 - 10.0" required
                                     value="{{ time_input_data.Historical_Cost_Deviation_ if time_input_data else '' }}">
                             </div>
                             <div class="form-group">
                                 <label for="time_stakeholder"><i class="fas fa-handshake"></i> Stakeholder Priority
                                     Score</label>
                                 <input type="number" step="0.01" id="time_stakeholder" name="Stakeholder_Priority_Score"
-                                    placeholder="0-10" required
+                                    placeholder="0.5 - 1.0" required
                                     value="{{ time_input_data.Stakeholder_Priority_Score if time_input_data else '' }}">
                             </div>
                         </div>
