@@ -4,12 +4,10 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).parent.parent
 
-# Load all models
 feasibility_model = joblib.load(str(BASE_DIR / "models" / "feasibility_model2.pkl"))
 cost_model = joblib.load(str(BASE_DIR / "models" / "cost_model.pkl"))
 time_model = joblib.load(str(BASE_DIR / "models" / "time_model.pkl"))
 
-# Feature names for feasibility model (12 features)
 FEATURE_NAMES = [
     'Estimated_Cost_USD',
     'Time_Estimate_Days',
@@ -25,7 +23,6 @@ FEATURE_NAMES = [
     'Project_Type_Water Infra'
 ]
 
-# Feature names for cost model (10 features — exact training order from explicit column selection)
 COST_FEATURE_NAMES = [
     'Scope_Complexity_Numeric',
     'Resource_Allocation_Score',
@@ -39,7 +36,6 @@ COST_FEATURE_NAMES = [
     'Project_Type_Water Infra'
 ]
 
-# Feature names for time model (10 features — order from df.drop() which follows CSV column order)
 TIME_FEATURE_NAMES = [
     'Resource_Allocation_Score',
     'Risk_Assessment_Score',
@@ -54,7 +50,6 @@ TIME_FEATURE_NAMES = [
 ]
 
 def predict_feasibility(input_data):
-    # Convert to DataFrame with feature names to avoid sklearn warning
     df = pd.DataFrame([input_data], columns=FEATURE_NAMES)
     prediction = feasibility_model.predict(df)[0]
     return prediction

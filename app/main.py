@@ -11,13 +11,11 @@ import joblib
 
 app = FastAPI()
 
-# Get the directory of the current file
 BASE_DIR = Path(__file__).parent.parent
 TEMPLATES_DIR = BASE_DIR / "templates"
 STATIC_DIR = BASE_DIR / "static"
 MODELS_DIR = BASE_DIR / "models"
 
-# Ensure static directory exists
 STATIC_DIR.mkdir(exist_ok=True)
 
 templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
@@ -25,12 +23,10 @@ app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
 @app.get("/favicon.ico")
 def favicon():
-    return Response(status_code=204)  # No content - silently ignore favicon requests
+    return Response(status_code=204)
 
 model = joblib.load(str(MODELS_DIR / "feasibility_model2.pkl"))
 
-# Project types for one-hot encoding (drop_first=True drops 'Bridge' alphabetically)
-# When Project_Type is 'Bridge', all encoded values will be 0
 PROJECT_TYPES_ENCODED = ['Building', 'Power Plant', 'Road', 'Water Infra']
 
 FEATURES = [
@@ -65,7 +61,6 @@ def predict(
     Stakeholder_Priority_Score: float = Form(...),
     Scope_Complexity_Numeric: int = Form(...)
 ):
-    # One-hot encode the Project_Type (Bridge is the reference/dropped category)
     project_type_encoded = [1 if pt == Project_Type else 0 for pt in PROJECT_TYPES_ENCODED]
     
     input_data = [
@@ -103,10 +98,8 @@ def predict(
 
     result_label = label_map[result]
     
-    # Generate all visualizations
     generate_all_visualizations(model, FEATURES, input_data, result_label)
     
-    # Add timestamp to prevent caching
     cache_bust = int(time.time())
 
     return templates.TemplateResponse(
@@ -135,10 +128,8 @@ def predict_cost_route(
     Historical_Cost_Deviation_: float = Form(...),
     Stakeholder_Priority_Score: float = Form(...)
 ):
-    # One-hot encode the Project_Type (Bridge = all zeros)
     project_type_encoded = [1 if pt == Project_Type else 0 for pt in PROJECT_TYPES_ENCODED]
 
-    # Build input in EXACT training order (must match COST_TIME_FEATURE_NAMES)
     input_data = [
         Scope_Complexity_Numeric,
         Resource_Allocation_Score,
@@ -148,7 +139,6 @@ def predict_cost_route(
         Stakeholder_Priority_Score
     ] + project_type_encoded
 
-    # Get prediction
     cost_result = predict_cost(input_data)
 
     # Store input data for form repopulation
@@ -185,11 +175,8 @@ def predict_time_route(
     Historical_Cost_Deviation_: float = Form(...),
     Stakeholder_Priority_Score: float = Form(...)
 ):
-    # One-hot encode the Project_Type (Bridge = all zeros)
     project_type_encoded = [1 if pt == Project_Type else 0 for pt in PROJECT_TYPES_ENCODED]
 
-    # Build input in EXACT training order (must match TIME_FEATURE_NAMES)
-    # Time model used df.drop() — Scope_Complexity_Numeric comes AFTER the scores
     input_data = [
         Resource_Allocation_Score,
         Risk_Assessment_Score,
@@ -199,7 +186,6 @@ def predict_time_route(
         Scope_Complexity_Numeric
     ] + project_type_encoded
 
-    # Get prediction
     time_result = predict_time(input_data)
 
     # Store input data for form repopulation

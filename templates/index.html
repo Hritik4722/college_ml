@@ -44,7 +44,6 @@
             font-size: 1.1rem;
         }
 
-        /* Navigation Tabs */
         .nav-tabs {
             display: flex;
             justify-content: center;
@@ -228,7 +227,6 @@
             box-shadow: 0 10px 30px rgba(17, 153, 142, 0.4);
         }
 
-        /* Feasibility Results */
         .results-section {}
 
         .result-card {
@@ -373,7 +371,6 @@
             border-radius: 10px;
         }
 
-        /* Single Prediction Result Card */
         .single-result-card {
             background: white;
             border-radius: 20px;
@@ -460,7 +457,6 @@
             font-size: 0.95rem;
         }
 
-        /* Animations */
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -498,7 +494,6 @@
             <p>AI-powered analysis to determine your project's success probability</p>
         </header>
 
-        <!-- Navigation Tabs -->
         <div class="nav-tabs">
             <button class="nav-tab {{ 'active' if active_tab != 'cost' and active_tab != 'time' else '' }}"
                 onclick="switchTab('feasibility')" id="tab-feasibility">
@@ -514,7 +509,6 @@
             </button>
         </div>
 
-        <!-- ====================== TAB 1: FEASIBILITY ====================== -->
         <div class="tab-content {{ 'active' if active_tab != 'cost' and active_tab != 'time' else '' }}"
             id="content-feasibility">
             <div class="main-content">
@@ -601,7 +595,6 @@
                     </form>
                 </div>
 
-                <!-- Feasibility Results -->
                 <div class="results-section">
                     {% if result %}
                     <div class="result-card animate delay-1">
@@ -676,7 +669,6 @@
             {% endif %}
         </div>
 
-        <!-- ====================== TAB 2: COST ESTIMATOR ====================== -->
         <div class="tab-content {{ 'active' if active_tab == 'cost' else '' }}" id="content-cost">
             <div class="main-content">
                 <div class="card animate">
@@ -775,7 +767,6 @@
             </div>
         </div>
 
-        <!-- ====================== TAB 3: TIME ESTIMATOR ====================== -->
         <div class="tab-content {{ 'active' if active_tab == 'time' else '' }}" id="content-time">
             <div class="main-content">
                 <div class="card animate">
